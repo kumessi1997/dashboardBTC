@@ -108,18 +108,19 @@
             transform: translateZ(-100px);
         }
 
+        /*
         .water-highlights {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at var(--highlight-x, 50%) var(--highlight-y, 50%), rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%);
-            mix-blend-mode: screen;
+            background: radial-gradient(circle at var(--highlight-x, 50%) var(--highlight-y, 50%), rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 50%);
+            mix-blend-mode: multiply;
             opacity: var(--highlight-opacity, 0.7);
             will-change: transform, opacity;
         }
-
+*/
         .particle-container {
             position: absolute;
             top: 0;
@@ -518,6 +519,13 @@
                 onLoad: () => {
                     r.resizeDrawingSurfaceToCanvas();
                 },
+            });
+
+            // Handle window resize for Rive canvas
+            window.addEventListener('resize', () => {
+                if (r) {
+                    r.resizeDrawingSurfaceToCanvas();
+                }
             });
 
             // Particle and Gradient Background Logic
