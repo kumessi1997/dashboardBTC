@@ -1,0 +1,615 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>National Financial Database - Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@rive-app/webgl2"></script>
+    <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Hide scrollbar for a cleaner dashboard look */
+        ::-webkit-scrollbar {
+            display: none;
+        }
+
+        .earth-grid {
+            background-image:
+                linear-gradient(to right, rgba(59, 130, 246, 0.08) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(59, 130, 246, 0.08) 1px, transparent 1px);
+            background-size: 30px 30px;
+            mask-image: radial-gradient(circle at center, black 20%, transparent 70%);
+            -webkit-mask-image: radial-gradient(circle at center, black 20%, transparent 70%);
+            transform: perspective(1000px) rotateX(60deg) scale(1.5);
+        }
+
+        .map-glow {
+            filter: drop-shadow(0 0 25px rgba(59, 130, 246, 0.3));
+        }
+
+        .card-dark-glass {
+            background: linear-gradient(135deg, rgba(8, 26, 64, 0.6) 0%, rgba(5, 18, 50, 0.4) 100%);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            border-radius: 12px;
+        }
+
+        /* Pulse effect for data points */
+        @keyframes subtlePulse {
+
+            0%,
+            100% {
+                opacity: 0.6;
+                transform: scale(1);
+            }
+
+            50% {
+                opacity: 1;
+                transform: scale(1.2);
+            }
+        }
+
+        .animate-data-pulse {
+            animation: subtlePulse 3s ease-in-out infinite;
+        }
+
+        /* Gradient Particle Background Styles */
+        .water-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+            background: linear-gradient(to bottom, #0C3676, #215BA5);
+            perspective: 1000px;
+            isolation: isolate;
+        }
+
+        .water-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            opacity: 0.6;
+            will-change: transform, opacity;
+        }
+
+        .layer-1 {
+            background-size: 200px;
+            animation: wave-motion-1 20s ease-in-out infinite alternate;
+            filter: blur(8px);
+            opacity: 0.5;
+        }
+
+        .layer-2 {
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.05) 0%, rgba(0, 0, 0, 0) 60%);
+            animation: wave-motion-2 18s linear infinite;
+            filter: blur(5px);
+            opacity: 0.7;
+            transform: translateZ(-50px);
+        }
+
+        .layer-3 {
+            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.1) 0%, rgba(0, 0, 0, 0) 70%);
+            animation: wave-motion-3 22s ease infinite alternate-reverse;
+            filter: blur(6px);
+            opacity: 0.6;
+            transform: translateZ(-100px);
+        }
+
+        .water-highlights {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at var(--highlight-x, 50%) var(--highlight-y, 50%), rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 50%);
+            mix-blend-mode: screen;
+            opacity: var(--highlight-opacity, 0.7);
+            will-change: transform, opacity;
+        }
+
+        .particle-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background-color: rgba(255, 255, 255, 0.8);
+            border-radius: 50%;
+            pointer-events: none;
+            animation: particle-fade-out 1s ease-out forwards;
+            will-change: transform, opacity;
+        }
+
+        @keyframes wave-motion-1 {
+            0% {
+                transform: scale(1, 1) translate(0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: scale(1.03, 0.97) translate(30px, 15px) rotate(1deg);
+            }
+
+            100% {
+                transform: scale(1, 1) translate(0, 0) rotate(0deg);
+            }
+        }
+
+        @keyframes wave-motion-2 {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            100% {
+                transform: translate(50px, 20px) rotate(2deg);
+            }
+        }
+
+        @keyframes wave-motion-3 {
+            0% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            50% {
+                transform: translate(-40px, -15px) rotate(-1deg);
+            }
+
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+        }
+
+        @keyframes particle-fade-out {
+            0% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translate(var(--particle-end-x), var(--particle-end-y)) scale(0.2);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-[#F4F7FB] text-slate-800 h-screen w-screen overflow-hidden flex flex-col antialiased select-none">
+
+    <!-- Topbar -->
+    <header
+        class="h-[52px] bg-gradient-to-r from-[#0C3676] to-[#215BA5] flex items-center justify-between px-5 z-50 shrink-0 shadow-md">
+        <!-- Logo & Title -->
+        <div class="flex items-center gap-3">
+            <div
+                class="w-8 h-8 rounded bg-white/10 border border-white/20 flex items-center justify-center backdrop-blur-sm">
+                <iconify-icon icon="solar:shield-star-linear" class="text-white text-lg"
+                    style="stroke-width: 1.5px;"></iconify-icon>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-white text-xs font-medium tracking-tighter uppercase leading-tight">Cơ sở dữ liệu quốc
+                    gia về tài chính</span>
+
+            </div>
+        </div>
+
+        <!-- Right Actions -->
+        <div class="flex items-center gap-4">
+            <div class="flex items-center gap-1 border-r border-white/10 pr-4">
+                <button
+                    class="w-9 h-9 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors">
+                    <iconify-icon icon="solar:magnifer-linear" class="text-xl"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </button>
+                <button
+                    class="w-9 h-9 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors relative">
+                    <iconify-icon icon="solar:bell-linear" class="text-xl" style="stroke-width: 1.5px;"></iconify-icon>
+                    <span class="absolute top-2 right-2 w-1.5 h-1.5 bg-red-500 rounded-full"></span>
+                </button>
+                <button
+                    class="w-9 h-9 rounded-lg flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-colors">
+                    <iconify-icon icon="solar:settings-linear" class="text-xl"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </button>
+            </div>
+
+            <!-- User Profile -->
+            <button class="flex items-center gap-3 pl-1 hover:opacity-80 transition-opacity">
+                <div
+                    class="w-8 h-8 rounded-full bg-blue-400 border border-white/20 flex items-center justify-center overflow-hidden">
+                    <iconify-icon icon="solar:user-linear" class="text-white text-sm"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </div>
+                <span class="text-white text-xs font-medium tracking-tight">Nguyễn Văn Anh</span>
+                <iconify-icon icon="solar:alt-arrow-down-linear" class="text-white/50 text-sm"
+                    style="stroke-width: 1.5px;"></iconify-icon>
+            </button>
+        </div>
+    </header>
+
+    <div class="flex flex-1 overflow-hidden relative">
+
+        <!-- Sidebar -->
+        <aside
+            class="w-[68px] bg-white/40 backdrop-blur-md border-r border-slate-200/60 z-40 flex flex-col items-center py-5 shadow-sm shrink-0">
+            <nav class="flex flex-col gap-2 w-full px-2 relative">
+                <!-- Active Indicator -->
+                <div class="absolute left-0 top-2 w-1 h-8 bg-blue-500 rounded-r-md transition-transform duration-300">
+                </div>
+
+                <!-- Nav Items -->
+                <a href="#"
+                    class="w-full h-11 rounded-xl bg-blue-50/50 text-blue-600 flex items-center justify-center shadow-sm border border-blue-100/50 relative group">
+                    <iconify-icon icon="solar:home-2-linear" class="text-xl"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </a>
+                <a href="#"
+                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
+                    <iconify-icon icon="solar:widget-5-linear"
+                        class="text-xl group-hover:scale-110 transition-transform"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </a>
+                <a href="#"
+                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
+                    <iconify-icon icon="solar:global-linear" class="text-xl group-hover:scale-110 transition-transform"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </a>
+                <a href="#"
+                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
+                    <iconify-icon icon="solar:wallet-money-linear"
+                        class="text-xl group-hover:scale-110 transition-transform"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </a>
+                <a href="#"
+                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
+                    <iconify-icon icon="solar:wad-of-money-linear"
+                        class="text-xl group-hover:scale-110 transition-transform"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </a>
+                <a href="#"
+                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
+                    <iconify-icon icon="solar:shop-linear" class="text-xl group-hover:scale-110 transition-transform"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </a>
+                <a href="#"
+                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
+                    <iconify-icon icon="solar:box-linear" class="text-xl group-hover:scale-110 transition-transform"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </a>
+                <a href="#"
+                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
+                    <iconify-icon icon="solar:inbox-line-linear"
+                        class="text-xl group-hover:scale-110 transition-transform"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </a>
+                <a href="#"
+                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
+                    <iconify-icon icon="solar:bank-linear" class="text-xl group-hover:scale-110 transition-transform"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </a>
+                <a href="#"
+                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
+                    <iconify-icon icon="solar:buildings-2-linear"
+                        class="text-xl group-hover:scale-110 transition-transform"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </a>
+                <a href="#"
+                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
+                    <iconify-icon icon="solar:chart-square-linear"
+                        class="text-xl group-hover:scale-110 transition-transform"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- Main Dashboard Viewport -->
+        <main class="flex-1 relative overflow-hidden flex flex-col justify-center items-center">
+
+            <!-- Particle Background -->
+            <div class="water-background">
+                <div class="water-layer layer-1"></div>
+                <div class="water-layer layer-2"></div>
+                <div class="water-layer layer-3"></div>
+                <div class="water-highlights"></div>
+                <div class="particle-container"></div>
+            </div>
+
+            <!-- Floating Header Titles -->
+            <div class="absolute top-10 flex flex-col items-center gap-4 z-40 pointer-events-none">
+                <h1 class="text-[32px] font-semibold text-white tracking-tight drop-shadow-sm">360° Doanh Nghiệp
+                </h1>
+                <div
+                    class="pointer-events-auto cursor-pointer bg-white/70 backdrop-blur-md border border-white shadow-sm rounded-full px-5 py-2 flex items-center gap-2 hover:bg-white/90 transition-colors">
+                    <span class="text-xs font-medium text-slate-600">Năm thống kê:</span>
+                    <span class="text-sm font-semibold text-slate-800">2026</span>
+                    <iconify-icon icon="solar:alt-arrow-down-linear" class="text-slate-400 text-sm ml-1"
+                        style="stroke-width: 1.5px;"></iconify-icon>
+                </div>
+            </div>
+
+            <!-- Background Map Rive Layer -->
+            <div id="layer-map" class="absolute inset-0 z-10 w-full h-full pointer-events-auto">
+                <canvas id="rive-canvas" class="w-full h-full"></canvas>
+            </div>
+
+            <!-- Parallax Scene -->
+            <div class="relative w-full h-full max-w-6xl mx-auto flex items-center justify-center pointer-events-none"
+                id="parallax-container">
+
+                <!-- Floating Data Cards Layer -->
+                <div id="layer-cards" class="absolute inset-0 z-20 pointer-events-none hidden">
+
+                    <!-- Content Left Frame -->
+                    <div
+                        class="absolute left-[3%] top-1/2 -translate-y-1/2 flex flex-col gap-6 pointer-events-auto w-[280px]">
+
+                        <!-- Card 1: Top Left -->
+                        <div
+                            class="card-dark-glass p-4 flex flex-col gap-3 group hover:-translate-y-1 transition-transform duration-300">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-white">
+                                    <iconify-icon icon="solar:transfer-horizontal-linear"
+                                        class="text-xl"></iconify-icon>
+                                    <span class="text-sm font-semibold tracking-wide">Phương án sắp xếp DNNN</span>
+                                </div>
+                                <div
+                                    class="w-6 h-6 rounded flex items-center justify-center bg-white/5 border border-white/10 text-slate-400 hover:text-white cursor-pointer transition-colors">
+                                    <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
+                                </div>
+                            </div>
+                            <div class="h-px w-full bg-gradient-to-r from-white/20 via-white/10 to-transparent"></div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs font-normal text-slate-400">Số lượng DN cổ phần hóa</span>
+                                <span
+                                    class="text-[26px] font-bold text-blue-400 tracking-tight leading-none">1.241</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Middle Left -->
+                        <div
+                            class="card-dark-glass p-4 flex flex-col gap-3 group hover:-translate-y-1 transition-transform duration-300">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-white">
+                                    <iconify-icon icon="solar:bank-linear" class="text-xl"></iconify-icon>
+                                    <span class="text-sm font-semibold tracking-wide">Tình hình tuân thủ</span>
+                                </div>
+                                <div
+                                    class="w-6 h-6 rounded flex items-center justify-center bg-white/5 border border-white/10 text-slate-400 hover:text-white cursor-pointer transition-colors">
+                                    <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
+                                </div>
+                            </div>
+                            <div class="h-px w-full bg-gradient-to-r from-white/20 via-white/10 to-transparent"></div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs font-normal text-slate-400">Nợ thuế (Tỷ đồng)</span>
+                                <span
+                                    class="text-[26px] font-bold text-blue-400 tracking-tight leading-none">12.245</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Bottom Left -->
+                        <div
+                            class="card-dark-glass p-4 flex flex-col gap-3 group hover:-translate-y-1 transition-transform duration-300">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-white">
+                                    <iconify-icon icon="solar:bank-linear" class="text-xl"></iconify-icon>
+                                    <span class="text-sm font-semibold tracking-wide">Nghĩa vụ với NSNN</span>
+                                </div>
+                                <div
+                                    class="w-6 h-6 rounded flex items-center justify-center bg-white/5 border border-white/10 text-slate-400 hover:text-white cursor-pointer transition-colors">
+                                    <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
+                                </div>
+                            </div>
+                            <div class="h-px w-full bg-gradient-to-r from-white/20 via-white/10 to-transparent"></div>
+                            <div class="flex flex-col gap-1">
+                                <span class="text-xs font-normal text-slate-400">Tổng tiền phải nộp (Tỷ đồng):</span>
+                                <span
+                                    class="text-[26px] font-bold text-blue-400 tracking-tight leading-none">2.245</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- Content Right Frame -->
+                    <div
+                        class="absolute right-[3%] top-1/2 -translate-y-1/2 flex flex-col gap-6 pointer-events-auto w-[280px]">
+
+                        <!-- Card 4: Top Right -->
+                        <div
+                            class="card-dark-glass p-4 flex flex-col gap-3 group hover:-translate-y-1 transition-transform duration-300">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-white">
+                                    <iconify-icon icon="solar:buildings-2-linear" class="text-xl"></iconify-icon>
+                                    <span class="text-sm font-semibold tracking-wide">Tổng quan doanh nghiệp</span>
+                                </div>
+                                <div
+                                    class="w-6 h-6 rounded flex items-center justify-center bg-white/5 border border-white/10 text-slate-400 hover:text-white cursor-pointer transition-colors">
+                                    <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
+                                </div>
+                            </div>
+                            <div class="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-white/20"></div>
+                            <div class="flex flex-col gap-1 text-right">
+                                <span class="text-xs font-normal text-slate-400">DN thành lập mới</span>
+                                <span
+                                    class="text-[26px] font-bold text-blue-400 tracking-tight leading-none">15.241</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 5: Middle Right -->
+                        <div
+                            class="card-dark-glass p-4 flex flex-col gap-3 group hover:-translate-y-1 transition-transform duration-300">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-white">
+                                    <iconify-icon icon="solar:chart-square-linear" class="text-xl"></iconify-icon>
+                                    <span class="text-sm font-semibold tracking-wide flex-1 leading-tight">Tình hình
+                                        hoạt động và<br>SXKD chung</span>
+                                </div>
+                                <div
+                                    class="w-6 h-6 rounded flex items-center justify-center bg-white/5 border border-white/10 text-slate-400 hover:text-white cursor-pointer transition-colors relative -top-1">
+                                    <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
+                                </div>
+                            </div>
+                            <div class="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-white/20"></div>
+                            <div class="flex flex-col gap-1 text-right">
+                                <span class="text-xs font-normal text-slate-400">Doanh thu (Nghìn tỷ)</span>
+                                <span
+                                    class="text-[26px] font-bold text-blue-400 tracking-tight leading-none">15.241</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 6: Bottom Right -->
+                        <div
+                            class="card-dark-glass p-4 flex flex-col gap-3 group hover:-translate-y-1 transition-transform duration-300">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-2 text-white">
+                                    <iconify-icon icon="solar:file-check-linear" class="text-xl"></iconify-icon>
+                                    <span class="text-sm font-semibold tracking-wide">Hiệu quả hoạt động DN</span>
+                                </div>
+                                <div
+                                    class="w-6 h-6 rounded flex items-center justify-center bg-white/5 border border-white/10 text-slate-400 hover:text-white cursor-pointer transition-colors">
+                                    <iconify-icon icon="solar:arrow-right-linear" class="text-sm"></iconify-icon>
+                                </div>
+                            </div>
+                            <div class="h-px w-full bg-gradient-to-r from-transparent via-white/10 to-white/20"></div>
+                            <div class="flex flex-col gap-1 text-right">
+                                <span class="text-xs font-normal text-slate-400">Tỷ suất lợi nhuận trước thuế
+                                    (ROE):</span>
+                                <span
+                                    class="text-[26px] font-bold text-blue-400 tracking-tight leading-none">2,41%</span>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Rive Logic -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize Rive
+            const r = new rive.Rive({
+                src: 'vietnam.riv',
+                canvas: document.getElementById('rive-canvas'),
+                autoplay: true,
+                autoBind: true,
+                artboard: 'Main',
+                stateMachines: 'State Machine 1',
+                onLoad: () => {
+                    r.resizeDrawingSurfaceToCanvas();
+                },
+            });
+
+            // Particle and Gradient Background Logic
+            const waterHighlights = document.querySelector('.water-highlights');
+            const particleContainer = document.querySelector('.particle-container');
+            const mainView = document.querySelector('main');
+
+            let mouseX = window.innerWidth / 2;
+            let mouseY = window.innerHeight / 2;
+
+            function updateHighlightPosition() {
+                const targetX = (mouseX / window.innerWidth) * 100;
+                const targetY = (mouseY / window.innerHeight) * 100;
+
+                const currentX = parseFloat(waterHighlights.style.getPropertyValue('--highlight-x') || 50);
+                const currentY = parseFloat(waterHighlights.style.getPropertyValue('--highlight-y') || 50);
+
+                const lerpFactor = 0.05;
+                const newX = currentX + (targetX - currentX) * lerpFactor;
+                const newY = currentY + (targetY - currentY) * lerpFactor;
+
+                waterHighlights.style.setProperty('--highlight-x', `${newX}%`);
+                waterHighlights.style.setProperty('--highlight-y', `${newY}%`);
+                waterHighlights.style.setProperty('--highlight-opacity', '0.8');
+            }
+
+            function createParticle(x, y) {
+                if (!mainView || !particleContainer) return;
+                const mainRect = mainView.getBoundingClientRect();
+
+                // Keep particles inside the main container
+                if (x < mainRect.left || x > mainRect.right || y < mainRect.top || y > mainRect.bottom) return;
+
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                particle.style.left = `${x - mainRect.left}px`;
+                particle.style.top = `${y - mainRect.top}px`;
+
+                const endX = (Math.random() - 0.5) * 100;
+                const endY = (Math.random() - 0.5) * 100;
+                particle.style.setProperty('--particle-end-x', `${endX}px`);
+                particle.style.setProperty('--particle-end-y', `${endY}px`);
+
+                particleContainer.appendChild(particle);
+
+                particle.addEventListener('animationend', () => {
+                    particle.remove();
+                });
+            }
+
+            let lastParticleTime = 0;
+            const particleInterval = 100;
+
+            // Forward pointer events to Rive canvas when hovering over cards
+            const riveCanvas = document.getElementById('rive-canvas');
+            document.addEventListener('pointermove', (e) => {
+                if (e.target !== riveCanvas && riveCanvas) {
+                    const clonedEvent = new PointerEvent('pointermove', {
+                        clientX: e.clientX,
+                        clientY: e.clientY,
+                        pointerId: e.pointerId,
+                        isPrimary: e.isPrimary,
+                        pointerType: e.pointerType,
+                        bubbles: true,
+                        cancelable: true,
+                        view: window
+                    });
+                    riveCanvas.dispatchEvent(clonedEvent);
+                }
+            });
+
+            document.addEventListener('mousemove', (event) => {
+                mouseX = event.clientX;
+                mouseY = event.clientY;
+
+                const currentTime = Date.now();
+                if (currentTime - lastParticleTime > particleInterval) {
+                    createParticle(event.clientX + (Math.random() - 0.5) * 10, event.clientY + (Math.random() - 0.5) * 10);
+                    lastParticleTime = currentTime;
+                }
+            });
+
+            function animate() {
+                if (waterHighlights) updateHighlightPosition();
+                requestAnimationFrame(animate);
+            }
+
+            animate();
+        });
+    </script>
+
+</body>
+
+</html>
