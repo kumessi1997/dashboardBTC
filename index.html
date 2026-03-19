@@ -69,7 +69,7 @@
             height: 100%;
             overflow: hidden;
             z-index: 0;
-            background: linear-gradient(to bottom, #0C3676, #215BA5);
+            background: linear-gradient(to bottom, #001c32, #023884);
             perspective: 1000px;
             isolation: isolate;
         }
@@ -280,45 +280,8 @@
                         class="text-xl group-hover:scale-110 transition-transform"
                         style="stroke-width: 1.5px;"></iconify-icon>
                 </a>
-                <a href="#"
-                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
-                    <iconify-icon icon="solar:wad-of-money-linear"
-                        class="text-xl group-hover:scale-110 transition-transform"
-                        style="stroke-width: 1.5px;"></iconify-icon>
-                </a>
-                <a href="#"
-                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
-                    <iconify-icon icon="solar:shop-linear" class="text-xl group-hover:scale-110 transition-transform"
-                        style="stroke-width: 1.5px;"></iconify-icon>
-                </a>
-                <a href="#"
-                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
-                    <iconify-icon icon="solar:box-linear" class="text-xl group-hover:scale-110 transition-transform"
-                        style="stroke-width: 1.5px;"></iconify-icon>
-                </a>
-                <a href="#"
-                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
-                    <iconify-icon icon="solar:inbox-line-linear"
-                        class="text-xl group-hover:scale-110 transition-transform"
-                        style="stroke-width: 1.5px;"></iconify-icon>
-                </a>
-                <a href="#"
-                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
-                    <iconify-icon icon="solar:bank-linear" class="text-xl group-hover:scale-110 transition-transform"
-                        style="stroke-width: 1.5px;"></iconify-icon>
-                </a>
-                <a href="#"
-                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
-                    <iconify-icon icon="solar:buildings-2-linear"
-                        class="text-xl group-hover:scale-110 transition-transform"
-                        style="stroke-width: 1.5px;"></iconify-icon>
-                </a>
-                <a href="#"
-                    class="w-full h-11 rounded-xl text-slate-400 hover:text-blue-600 hover:bg-blue-50/30 flex items-center justify-center transition-all duration-200 group">
-                    <iconify-icon icon="solar:chart-square-linear"
-                        class="text-xl group-hover:scale-110 transition-transform"
-                        style="stroke-width: 1.5px;"></iconify-icon>
-                </a>
+
+
             </nav>
         </aside>
 
@@ -336,14 +299,36 @@
 
             <!-- Floating Header Titles -->
             <div class="absolute top-10 flex flex-col items-center gap-4 z-40 pointer-events-none">
-                <h1 class="text-[32px] font-semibold text-white tracking-tight drop-shadow-sm">360° Doanh Nghiệp
+                <h1 class="text-[42px] font-bold text-white tracking-tight drop-shadow-lg">360° Doanh Nghiệp
                 </h1>
-                <div
-                    class="pointer-events-auto cursor-pointer bg-white/70 backdrop-blur-md border border-white shadow-sm rounded-full px-5 py-2 flex items-center gap-2 hover:bg-white/90 transition-colors">
-                    <span class="text-xs font-medium text-slate-600">Năm thống kê:</span>
-                    <span class="text-sm font-semibold text-slate-800">2026</span>
-                    <iconify-icon icon="solar:alt-arrow-down-linear" class="text-slate-400 text-sm ml-1"
-                        style="stroke-width: 1.5px;"></iconify-icon>
+                <!-- Year Selection Dropdown -->
+                <div class="relative pointer-events-auto" id="year-dropdown-container">
+                    <div id="year-dropdown-btn"
+                        class="cursor-pointer bg-[#021A3C]/40 backdrop-blur-md border-[1.2px] border-blue-500 shadow-[0_0_12px_rgba(59,130,246,0.25)] rounded-xl px-4 py-2 flex items-center gap-1.5 hover:bg-blue-500/20 transition-all duration-300">
+                        <span class="text-[14px] font-medium text-slate-300">Năm thống kê:</span>
+                        <span id="selected-year" class="text-[14px] font-bold text-blue-400">2026</span>
+                        <iconify-icon icon="solar:alt-arrow-down-linear" class="text-blue-400 text-lg ml-1.5"
+                            style="stroke-width: 1.5px;"></iconify-icon>
+                    </div>
+
+                    <!-- Dropdown Menu -->
+                    <div id="year-dropdown-menu"
+                        class="absolute top-full mt-2 left-1/2 -translate-x-1/2 w-32 bg-white/90 backdrop-blur-md border border-slate-200/60 rounded-xl shadow-lg flex flex-col py-2 hidden transition-all z-50">
+                        <button
+                            class="year-option px-4 py-2 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors text-center w-full">2026</button>
+                        <button
+                            class="year-option px-4 py-2 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors text-center w-full">2025</button>
+                        <button
+                            class="year-option px-4 py-2 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors text-center w-full">2024</button>
+                        <button
+                            class="year-option px-4 py-2 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors text-center w-full">2023</button>
+                        <button
+                            class="year-option px-4 py-2 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors text-center w-full">2022</button>
+                        <button
+                            class="year-option px-4 py-2 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors text-center w-full">2021</button>
+                        <button
+                            class="year-option px-4 py-2 text-sm font-medium text-slate-700 hover:bg-blue-50 hover:text-blue-600 transition-colors text-center w-full">2020</button>
+                    </div>
                 </div>
             </div>
 
@@ -527,6 +512,33 @@
                     r.resizeDrawingSurfaceToCanvas();
                 }
             });
+
+            // Year Dropdown Logic
+            const yearDropdownBtn = document.getElementById('year-dropdown-btn');
+            const yearDropdownMenu = document.getElementById('year-dropdown-menu');
+            const selectedYearText = document.getElementById('selected-year');
+            const yearOptions = document.querySelectorAll('.year-option');
+
+            if (yearDropdownBtn && yearDropdownMenu) {
+                yearDropdownBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    yearDropdownMenu.classList.toggle('hidden');
+                });
+
+                // Close dropdown when clicking outside
+                document.addEventListener('click', (e) => {
+                    if (!yearDropdownBtn.contains(e.target) && !yearDropdownMenu.contains(e.target)) {
+                        yearDropdownMenu.classList.add('hidden');
+                    }
+                });
+
+                yearOptions.forEach(option => {
+                    option.addEventListener('click', () => {
+                        selectedYearText.textContent = option.textContent;
+                        yearDropdownMenu.classList.add('hidden');
+                    });
+                });
+            }
 
             // Particle and Gradient Background Logic
             const waterHighlights = document.querySelector('.water-highlights');
